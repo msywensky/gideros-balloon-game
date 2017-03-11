@@ -7,8 +7,8 @@ function Arrows:init(stage, person)
 	self.rightArrow = Sprite.new()
 	
 
-	self.leftArrow:addChild(Bitmap.new(Texture.new("left50px.png")))
-	self.rightArrow:addChild(Bitmap.new(Texture.new("right50px.png")))
+	self.leftArrow:addChild(Bitmap.new(Texture.new("images/left50px.png")))
+	self.rightArrow:addChild(Bitmap.new(Texture.new("images/right50px.png")))
 	self.leftArrow:setPosition(25,180)
 	self.rightArrow:setPosition(90,180)
 	self.direction = 0

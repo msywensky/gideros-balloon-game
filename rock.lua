@@ -1,5 +1,9 @@
 Rock = Core.class(Sprite)
 
+local rockmaxwidth = application:getContentWidth()
+local rockmaxheight = application:getContentHeight()
+local texture_stone = Texture.new("images/stone.png")
+
 function Rock:init(stage, x,y, x2, y2, angle, velocity)
 	-- create a Bitmap for each frame
 
@@ -25,9 +29,8 @@ function Rock:init(stage, x,y, x2, y2, angle, velocity)
 	self.gravity = 9.8
 	self.wind = 0
 	self:setPosition(self.x,self.y)
-	self:addChild(Bitmap.new(Texture.new("stone.png")))
+	self:addChild(Bitmap.new(texture_stone))
 	print("Rock created")
-	self.stage:addChild(self)
 end
 
 function Rock:update()
@@ -36,6 +39,22 @@ function Rock:update()
     self.y = self.y + ((-1.0 * (self.yVelocity * self.time)) + (.5 * self.gravity * (self.time ^ 2))) 
 
 	self:setPosition(self.x, self.y)
+end
+
+function Rock:offScreen()
+	return ( (self.x > rockmaxwidth) or (self.x < 0) or (self.y > rockmaxheight) )
+end
+
+function Rock:hitBalloon(balloons)
+	local i
+	for i=1, #balloons do
+		if balloons[i]:isHit(self.x, self.y) then
+			print("balloon ", balloons[i], " ", balloons[i].balloonIndex, " was popped")
+			return i
+		end
+	end
+	
+	return 0
 end
 
 
