@@ -1,5 +1,15 @@
 GamePlay = Core.class(Sprite)
 
+BALLOON_POP @ 1
+ZOMBIE_HIT  @ 2
+ZOMBIE_LOSE  @ 3
+SPACESHIP_FLYING @ 4
+SPACESHIP_HIT @ 5
+ROCKET_FLYING @ 6
+ROCKET_HIT @ 7
+
+
+
 local rocks = {}
 local person
 local arrows
@@ -37,7 +47,15 @@ function GamePlay:init()
 	arrows = Arrows.new(self, person)
 
 	self:addChild(person)
-	arrows:draw()
+	
+	self.backgroundMusic = Sound.new("sounds/carousel3.wav")
+	self.popSound = Sound.new("sounds/pop.wav")
+	self.zombieHitSound = Sound.new("sounds/zombie-roar-5.wav")
+	self.zombieLoseSound = Sound.new("sounds/zombie-growl2.wav")
+	self.spaceShipFlyingSound = Sound.new("sounds/spaceship.wav")
+	self.spaceShipHitSound = Sound.new("sounds/pop.wav")
+	self.rocketFlyingSound = Sound.new("sounds/qubodup__rocket-boost-engine-loop.wav")
+	self.rocketHitSound = Sound.new("sounds/pop.wav")
 
 end
 
@@ -72,35 +90,46 @@ function GamePlay:onEnterBegin()
 end
 
 function GamePlay:onEnterEnd()
+
+	self:restartGame()	
+end
+
+function GamePlay:onExitBegin()
+
+	self:endGame()
+	
+	self:removeEventListener("exitBegin", self.onExitBegin, self)
+end
+
+function GamePlay:addListeners()
 	self:addEventListener("exitBegin", self.onExitBegin, self)
 	self:addEventListener(Event.KEY_DOWN, self.onArrowKeyDown, self)
 	self:addEventListener(Event.TOUCHES_BEGIN, self.onScreenPressed, self)
 	self:addEventListener(Event.TOUCHES_END, self.onScreenPressedFinished, self)
 	self:addEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)
-	
-	self:restartGame()	
+
 end
 
-function GamePlay:onExitBegin()
+function GamePlay:removeListeners()
 	self:removeEventListener(Event.KEY_DOWN, self.onArrowKeyDown, self)
 	self:removeEventListener(Event.TOUCHES_BEGIN, self.onScreenPressed, self)
 	self:removeEventListener(Event.TOUCHES_END, self.onScreenPressedFinished, self)
 	self:removeEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)
-
-	self:removeEventListener("exitBegin", self.onExitBegin, self)
 end
 
+
+
 function GamePlay:onArrowKeyDown(event)
-	print(event.keyCode)
-	if event.keyCode == KeyCode.LEFT then
-		person:moveLeft()
-	elseif event.keyCode == KeyCode.RIGHT then
-		person:moveRight()
+	if not self.gameOver then
+		if event.keyCode == KeyCode.LEFT then
+			person:moveLeft()
+		elseif event.keyCode == KeyCode.RIGHT then
+			person:moveRight()
+		end
 	end
 end
 
 function GamePlay:onScreenPressed(event)
-	print("screen pressed")
 	beingPressed = true
 	pressedCount = 0
 	person:aim()
@@ -141,9 +170,12 @@ end
 
 function GamePlay:restartGame()
 
+	self:addListeners()
+	
 	if self.restartButton ~= nil then
 		self:removeChild(self.restartButton)
 	end
+	arrows:draw()
 	self.level = 0
 	self.score = 0
 	self.nextLevelInit = false
@@ -158,6 +190,8 @@ function GamePlay:restartGame()
 	self:nextLevel()
 	self.gameOver = false
 	self:removeGameOver()
+	
+	self.backgroundMusicChannel = self.backgroundMusic:play(0, true)
 	
 end
 
@@ -207,6 +241,7 @@ function GamePlay:nextLevel()
 		if self.spaceShip == nil then
 			self.spaceShip = SpaceShip.new()
 			self:addChild(self.spaceShip)
+			self:playSound(SPACESHIP_FLYING)
 		end
 	end
 
@@ -214,6 +249,7 @@ function GamePlay:nextLevel()
 		if self.Rocket == nil then
 			self.rocket = Rocket.new()
 			self:addChild(self.rocket)
+			self:playSound(ROCKET_FLYING)
 		end
 	end
 	print("Ending level ", self.level)
@@ -221,33 +257,77 @@ function GamePlay:nextLevel()
 	self.nextLevelInit = false
 end
 
-function GamePlay:removeAllGameObjects()
-	local i = 1
-	while i <= #self.balloons do
-		self:removeChild(self.balloons[i])
-		table.remove(self.balloons, i)
-	end
-	i = 1
-	while i <= #rocks do
-		self:removeChild(rocks[i])
-		table.remove(rocks, i)
-	end
-	
-	if self.spaceShip ~= nil then
-		self:removeChild(self.spaceShip)
-		self.spaceShip = nil
-	end
+function GamePlay:endGame()
+	if not self.gameOver then
 
-	if self.rocket ~= nil then
-		self:removeChild(self.rocket)
-		self.rocket = nil
-	end
+		local i = 1
+		while i <= #self.balloons do
+			self:removeChild(self.balloons[i])
+			table.remove(self.balloons, i)
+		end
+		i = 1
+		while i <= #rocks do
+			self:removeChild(rocks[i])
+			table.remove(rocks, i)
+		end
+		
+		if self.spaceShip ~= nil then
+			self:removeChild(self.spaceShip)
+			self.spaceShip = nil
+			self:stopSound(SPACESHIP_FLYING)
+		end
 
-	if self.zombie ~= nil then
-		self:removeChild(self.zombie)
-		self.zombie = nil
+		if self.rocket ~= nil then
+			self:removeChild(self.rocket)
+			self.rocket = nil
+			self:stopSound(ROCKET_FLYING)
+		end
+
+		if self.zombie ~= nil then
+			self:removeChild(self.zombie)
+			self.zombie = nil
+		end
+		self.gameOver = true
+
+		arrows:remove()
+		self:drawGameOver()
+		self:removeListeners()
+		self.backgroundMusicChannel:stop()
+		
 	end
+end
+
+function GamePlay:playSound(sound)
+
+	if sound == BALLOON_POP then
+		self.popSound:play()
+	elseif sound == ZOMBIE_HIT then
+		self.zombieHitSound:play()
+	elseif sound == ZOMBIE_LOSE then
+		self.zombieLoseSound:play()
+	elseif sound == SPACESHIP_FLYING then
+		self.spaceShipFlyingSoundChannel = self.spaceShipFlyingSound:play(0,true)
+	elseif sound == SPACESHIP_HIT then
+		self.spaceShipFlyingSoundChannel:stop()
+		self.spaceShipHitSound:play()
+	elseif sound == ROCKET_FLYING then
+		self.rocketFlyingSoundChannel = self.rocketFlyingSound:play(0,true)
+	elseif sound == ROCKET_HIT then
+		self.rocketFlyingSoundChannel:stop()
+		self.rocketHitSound:play()
+	end
+end
+
+function GamePlay:stopSound(sound)
+
+	if sound == SPACESHIP_FLYING then
+		self.spaceShipFlyingSoundChannel:stop()
+	elseif sound == ROCKET_FLYING then
+		if self.rocketFlyingSoundChannel ~= nil then
+			self.rocketFlyingSoundChannel:stop()
+		end
 	
+	end
 end
 
 function GamePlay:onEnterFrame()
@@ -262,25 +342,20 @@ function GamePlay:onEnterFrame()
 	while i <= #self.balloons do
 		self.balloons[i]:update()
 		if self.balloons[i]:offScreen() then
-			self.gameOver = true
+			self:endGame()
 			i = #self.balloons + 1
 		else
 			i = i + 1
 		end
 	end
 
-	if self.gameOver then
-		self:removeAllGameObjects()
-		self:drawGameOver()
-	end
-	
 	if not self.gameOver then
 
 		self.zombie:update()
 		if self.zombie:isHit(person.x, person.y) then
-			self.gameOver = true
-			self:removeAllGameObjects()
-			self:drawGameOver()
+			self:playSound(ZOMBIE_LOSE)
+			print("zombie got you")
+			self:endGame()
 		end
 	end
 	
@@ -289,6 +364,7 @@ function GamePlay:onEnterFrame()
 		if self.spaceShip ~= nil then
 			self.spaceShip:update()
 			if self.spaceShip:offScreen() then
+				self:stopSound(SPACESHIP_FLYING)
 				self:removeChild(self.spaceShip)
 				self.spaceShip = nil
 			end
@@ -297,6 +373,7 @@ function GamePlay:onEnterFrame()
 		if self.rocket ~= nil then
 			self.rocket:update()
 			if self.rocket:offScreen() then
+				self:stopSound(ROCKET_FLYING)
 				self:removeChild(self.rocket)
 				self.rocket = nil
 			end
@@ -312,6 +389,7 @@ function GamePlay:onEnterFrame()
 				self:removeChild(rocks[j])
 				table.remove(rocks,j)					
 				self:updateScore(20)
+				self:playSound(ZOMBIE_HIT)
 				continue = false
 			end
 			
@@ -320,7 +398,8 @@ function GamePlay:onEnterFrame()
 					self:removeChild(self.spaceShip)
 					self:removeChild(rocks[j])
 					table.remove(rocks,j)
-					self:updateScore(10)
+					self:updateScore(100)
+					self:playSound(SPACESHIP_HIT)
 					continue = false
 					self.spaceShip = nil
 				end
@@ -331,7 +410,8 @@ function GamePlay:onEnterFrame()
 					self:removeChild(self.rocket)
 					self:removeChild(rocks[j])
 					table.remove(rocks,j)
-					self:updateScore(10)
+					self:updateScore(50)
+					self:playSound(ROCKET_HIT)
 					continue = false
 					self.rocket = nil
 				end
@@ -349,6 +429,7 @@ function GamePlay:onEnterFrame()
 					table.remove(rocks,j)
 					table.remove(self.balloons,t_balloon)
 					self:updateScore(1)
+					self:playSound(BALLOON_POP)
 				else
 					j = j + 1
 				end

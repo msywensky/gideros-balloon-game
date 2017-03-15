@@ -1,10 +1,58 @@
 <project>
- <properties win_domain="giderosmobile.com" splashScaleMode="0" app_name="GiderosBalloonGame" scaleMode="5" windowWidth="0" html5_host="" osx_org="GiderosMobile" retinaDisplay="0" build_number="1" ios_bundle="com.yourdomain." architecture="0" html5_mem="256" autorotation="0" packageName="com.yourdomain.yourapp" encryptCode="0" win_org="GiderosMobile" mouseToTouch="1" encryptAssets="0" disableSplash="0" orientation="1" osx_category="5" windowHeight="0" tv_icon="" app_icon="" osx_bundle="com.yourdomain." winrt_org="GiderosMobile" mouseTouchOrder="1" iosDevice="0" winrt_package="com.yourdomain.yourapp" splash_v_image="" logicalHeight="480" logicalWidth="320" backgroundColor="#ffffff" version="0.1.0" osx_domain="giderosmobile.com" splash_h_image="" version_code="1" exportMode="0" android_template="0" fps="60" touchToMouse="1">
+ <properties win_domain="giderosmobile.com" splashScaleMode="0" app_name="ZombiePop" scaleMode="5" windowWidth="0" html5_host="" osx_org="GiderosMobile" retinaDisplay="1" build_number="2" ios_bundle="com.msywensky.zombiepop" architecture="1" html5_mem="256" autorotation="0" packageName="com.yourdomain.yourapp" encryptCode="0" win_org="GiderosMobile" mouseToTouch="1" encryptAssets="0" disableSplash="0" orientation="1" osx_category="5" windowHeight="0" tv_icon="" app_icon="ios/gideros-balloon-game/gideros-balloon-game iOS/Images.xcassets/AppIcon.appiconset/icon-83.5@2x.png" osx_bundle="com.yourdomain." winrt_org="GiderosMobile" mouseTouchOrder="1" iosDevice="0" winrt_package="com.yourdomain.yourapp" splash_v_image="" logicalHeight="480" logicalWidth="320" backgroundColor="#ffffff" version="0.1.0" osx_domain="giderosmobile.com" splash_h_image="" version_code="1" exportMode="0" android_template="0" fps="60" touchToMouse="1">
   <imageScales/>
-  <plugins/>
-  <exports/>
+  <plugins>
+   <plugin name="Lpeg" enabled="0"/>
+   <plugin name="Media plugin" enabled="0"/>
+   <plugin name="Gaming" enabled="0"/>
+   <plugin name="Clipper" enabled="0"/>
+   <plugin name="LuaSqlite3" enabled="0"/>
+   <plugin name="Bitop" enabled="0"/>
+   <plugin name="Store Detector" enabled="0"/>
+   <plugin name="Ads" enabled="0"/>
+   <plugin name="Native" enabled="0"/>
+   <plugin name="Camera" enabled="0"/>
+   <plugin name="Microphone" enabled="0"/>
+   <plugin name="Lua Socket" enabled="0"/>
+   <plugin name="Iab" enabled="0"/>
+   <plugin name="Flurry" enabled="0"/>
+   <plugin name="JSON" enabled="0"/>
+   <plugin name="Require" enabled="0"/>
+   <plugin name="Exampleplugin" enabled="0"/>
+   <plugin name="Facebook" enabled="1">
+    <property name="fbAppId" value=""/>
+   </plugin>
+   <plugin name="Google Play Services" enabled="0"/>
+   <plugin name="Struct" enabled="0"/>
+   <plugin name="Controller" enabled="0"/>
+   <plugin name="LuaFileSystem" enabled="0"/>
+   <plugin name="Countly" enabled="0"/>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="19"/>
+    <property name="androidTools" value=""/>
+    <property name="buildApk" value="1"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value=""/>
+    <property name="keyStore" value=""/>
+    <property name="packageName" value="com.yourdomain.yourapp"/>
+   </export>
+  </exports>
  </properties>
+ <folder name="sounds">
+  <file source="sounds/carousel3.wav"/>
+  <file source="sounds/zombie-growl2.wav"/>
+  <file source="sounds/spaceship.wav"/>
+  <file source="sounds/qubodup__rocket-boost-engine-loop.wav"/>
+  <file source="sounds/zombie-roar-5.wav"/>
+  <file source="sounds/pop.wav"/>
+ </folder>
  <folder name="images">
+  <file source="images/blue-square-button-100px.png"/>
   <file source="images/Barbed-Wire-Rounded-Rectangle-Frame-Border-150px.png"/>
   <folder name="pixelzombie">
    <file source="images/zombie_pixels/3.png"/>
@@ -93,6 +141,8 @@
   <file source="fonts/Jellee-Roman.txt"/>
   <file source="fonts/Jellee-Roman.png"/>
  </folder>
+ <file source="gamekit.lua"/>
+ <file source="apprater.lua"/>
  <file source="restartbutton.lua"/>
  <file source="button.lua"/>
  <file source="pixelzombie.lua"/>

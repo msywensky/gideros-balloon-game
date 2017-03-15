@@ -49,7 +49,6 @@ function Rock:hitBalloon(balloons)
 	local i
 	for i=1, #balloons do
 		if balloons[i]:isHit(self.x, self.y) then
-			print("balloon ", balloons[i], " ", balloons[i].balloonIndex, " was popped")
 			return i
 		end
 	end

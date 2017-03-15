@@ -14,6 +14,13 @@ function angleBetweenPoints( ax, ay, bx, by )
 end
 
 
+function resizeBitmap(bitmap, newWidth, newHeight)
+
+	local originalWidth = bitmap:getWidth()
+	local originalHeight = bitmap:getHeight()
+	bitmap:setScale(newWidth / originalWidth, newHeight / originalHeight)
+end
+
 function calcAngle2(playerX, playerY, objectX, objectY)
 	---return math.deg(math.atan2(playerY - objectY, playerX - objectX))
 	return (math.atan2(playerY - objectY, playerX - objectX) * 180) / math.pi

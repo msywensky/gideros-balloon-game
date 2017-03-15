@@ -19,9 +19,9 @@ function Person:init(stage, x,y)
 	
 	
 	self.stage = stage
-	self.maxX = 300
-	self.minX = 200
-	self.step = 4
+	self.maxX = application:getContentWidth() - 50
+	self.minX = 50
+	self.step = 5
 	self.rockOffset = 30
 	
 	self.frames = {}
@@ -42,10 +42,6 @@ function Person:init(stage, x,y)
 	
 	self:setPosition(x, y)
 
-	-- set the speed of the Person
-	
-	self:addEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)	
-	print('after init')
 end
 
 
@@ -93,10 +89,7 @@ function Person:aim()
 end
 
 function Person:throwRock(x, y, velocity)
-	print("My touchpoint:",x,y)
-	---print("My location:",self.x, self.y)
 	local angle4 = calcAngle2(self.x + self.rockOffset, self.y, x, y )
-	---print ("calcAngle2 - 180= ", 180 - angle4)
 	
 	local rock = Rock.new(self.stage, self.x + self.rockOffset, self.y, x, y, 180 - angle4, velocity)
 
@@ -109,5 +102,3 @@ function Person:throwRock(x, y, velocity)
 end
 
 
-function Person:onEnterFrame()
-end

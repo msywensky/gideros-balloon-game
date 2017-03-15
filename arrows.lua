@@ -13,7 +13,6 @@ function Arrows:init(stage, person)
 	self.rightArrow:setPosition(90,180)
 	self.direction = 0
 
-	self.leftArrow:addEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)	
 	self:setPerson(person)
 
 end
@@ -43,18 +42,22 @@ function Arrows:onArrowPressedFinished(event)
 end
 
 function Arrows:draw()
+	self.leftArrow:addEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)	
 	self.leftArrow:addEventListener(Event.TOUCHES_BEGIN,self.onArrowPressed, self)
 	self.leftArrow:addEventListener(Event.TOUCHES_END, self.onArrowPressedFinished, self)
-	
 	
 	self.stage:addChild(self.leftArrow)
 	self.stage:addChild(self.rightArrow)
 end
 
 function Arrows:remove()
+	print("removing arrows")
 	self.stage:removeChild(self.leftArrow)
 	self.stage:removeChild(self.rightArrow)
 
+	self.leftArrow:removeEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)	
+	self.leftArrow:removeEventListener(Event.TOUCHES_BEGIN,self.onArrowPressed, self)
+	self.leftArrow:removeEventListener(Event.TOUCHES_END, self.onArrowPressedFinished, self)
 end
 
 function Arrows:onEnterFrame()
