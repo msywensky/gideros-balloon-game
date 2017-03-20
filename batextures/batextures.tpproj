@@ -1,0 +1,8 @@
+<library>
+ <properties showUnusedAreas="0" alphaThreshold="0" extrude="0" forceSquare="0" removeAlphaBorder="0" padding="1"/>
+ <file file="../../../Box Sync/images/bat5.png"/>
+ <file file="../../../Box Sync/images/bat4.png"/>
+ <file file="../../../Box Sync/images/bat3.png"/>
+ <file file="../../../Box Sync/images/bat2.png"/>
+ <file file="../../../Box Sync/images/bat1.png"/>
+</library>

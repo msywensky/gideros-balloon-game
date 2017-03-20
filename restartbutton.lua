@@ -6,12 +6,14 @@ local downColor = 0x0000ff
 function RestartButton:init(font, text)
 
 ---	local background = Bitmap.new(Texture.new("images/Barbed-Wire-Rounded-Rectangle-Frame-Border-150px.png"))
-	local background = Bitmap.new(Texture.new("images/blue-square-button-100px.png"))
+	local th = getActiveTheme()
+	local f = th.imageFolder
+	
+	local background = Bitmap.new(Texture.new(f .. th.images.button))
 
 	resizeBitmap(background,100,50)
 
 	self:addChild(background)
-	self:setPosition(300, 200)
 
 	local textField = TextField.new(font, text)
 	

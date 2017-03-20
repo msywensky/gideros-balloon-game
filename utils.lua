@@ -1,4 +1,18 @@
 -- returns the degrees between (0,0) and pt (note: 0 degrees is 'east')
+
+function scaleBackground(texture)
+	local bitmap = Bitmap.new(Texture.new(texture))
+	local scaleX = application:getContentWidth() / 800
+	local scaleY = application:getContentHeight() / 480
+	 
+	bitmap:setScaleX(scaleX)
+	bitmap:setScaleY(scaleY)
+	bitmap:setPosition(-800 * scaleX / 2 + application:getContentWidth() / 2, -480 * scaleY / 2 + application:getContentHeight() /2 )
+
+	return bitmap
+
+end
+
 function angleOfPoint( pt )
    local x, y = pt.x, pt.y
    local radian = math.atan2(y,x)

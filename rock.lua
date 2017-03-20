@@ -2,7 +2,12 @@ Rock = Core.class(Sprite)
 
 local rockmaxwidth = application:getContentWidth()
 local rockmaxheight = application:getContentHeight()
-local texture_stone = Texture.new("images/stone.png")
+local texture_stone = nil 
+
+function loadRockTexture(th)
+
+	texture_stone = Texture.new(th.imageFolder .. th.images.rock)
+end
 
 function Rock:init(stage, x,y, x2, y2, angle, velocity)
 	-- create a Bitmap for each frame

@@ -1,11 +1,14 @@
 PixelZombie = Core.class(Sprite)
 
-local appearImages = {
-	Bitmap.new(Texture.new("images/pixelzombie/1.png")),
-	Bitmap.new(Texture.new("images/pixelzombie/2.png")),
-	Bitmap.new(Texture.new("images/pixelzombie/3.png")) }
 
 local maxwidth = application:getContentWidth() - 50
+local zombieImages = {}
+
+function loadZombieImages(th)
+	for i = 1, #th.images.zombie do
+		zombieImages[i] = Bitmap.new(Texture.new(th.imageFolder .. th.images.zombie[i]))
+	end
+end
 
 
 function PixelZombie:init(level)
@@ -13,7 +16,7 @@ function PixelZombie:init(level)
 	self.imageNumber = 1
 	self:respawn(level)
 	
-	self:addChild(appearImages[self.imageNumber])
+	self:addChild(zombieImages[self.imageNumber])
 	
 end
 
@@ -22,12 +25,12 @@ function PixelZombie:update()
 	self:setPosition(self.x, self.y)
 	self.stepCount = self.stepCount + 1
 	if self.stepCount % 3 == 0 then
-		self:removeChild(appearImages[self.imageNumber])
+		self:removeChild(zombieImages[self.imageNumber])
 		self.imageNumber = self.imageNumber + 1
-		if self.imageNumber > 3 then
+		if self.imageNumber > #zombieImages then
 			self.imageNumber = 1
 		end
-		self:addChild(appearImages[self.imageNumber])
+		self:addChild(zombieImages[self.imageNumber])
 	end
 	
 end

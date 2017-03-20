@@ -7,10 +7,11 @@ SPACESHIP_FLYING @ 4
 SPACESHIP_HIT @ 5
 ROCKET_FLYING @ 6
 ROCKET_HIT @ 7
-
+BACKGROUND @ 8
 
 
 local rocks = {}
+local bats = {}
 local person
 local arrows
 local pressedCount = 0
@@ -28,65 +29,15 @@ function GamePlay:init()
 
 	self:addEventListener("enterBegin", self.onEnterBegin, self)
 	self:addEventListener("enterEnd", self.onEnterEnd, self)
-	self.dogfont20 = Font.new("fonts/gooddog20.txt", "fonts/gooddog20.png")
-	self.dogfont25 = Font.new("fonts/gooddog25.txt", "fonts/gooddog25.png")
-	self.dogfont30 = Font.new("fonts/gooddog30.txt", "fonts/gooddog30.png")
-	self.dogfont40 = Font.new("fonts/gooddog40.txt", "fonts/gooddog40.png")
-	self.dogfont50 = Font.new("fonts/gooddog50.txt", "fonts/gooddog50.png")
-
-	local bitmap = Bitmap.new(Texture.new("images/bg_cropped.png"))
-	local scaleX = application:getContentWidth() / 800
-	local scaleY = application:getContentHeight() / 480
-	 
-	bitmap:setScaleX(scaleX)
-	bitmap:setScaleY(scaleY)
-	bitmap:setPosition(-800 * scaleX / 2 + application:getContentWidth() / 2, -480 * scaleY / 2 + application:getContentHeight() /2 )
-	self:addChild(bitmap)
-
-	person = Person.new(self, personStartX, personStartY)
-	arrows = Arrows.new(self, person)
-
-	self:addChild(person)
-	
-	self.backgroundMusic = Sound.new("sounds/carousel3.wav")
-	self.popSound = Sound.new("sounds/pop.wav")
-	self.zombieHitSound = Sound.new("sounds/zombie-roar-5.wav")
-	self.zombieLoseSound = Sound.new("sounds/zombie-growl2.wav")
-	self.spaceShipFlyingSound = Sound.new("sounds/spaceship.wav")
-	self.spaceShipHitSound = Sound.new("sounds/pop.wav")
-	self.rocketFlyingSound = Sound.new("sounds/qubodup__rocket-boost-engine-loop.wav")
-	self.rocketHitSound = Sound.new("sounds/pop.wav")
 
 end
-
-function GamePlay:updateScore(points)
-	self.score = self.score + points
-	if self.scoreText == nil then
-		self.scoreText = TextField.new(self.dogfont30, "Score: 0")
-		self.scoreText:setTextColor(0xffffff)
-		self.scoreText:setX(40)
-		self.scoreText:setY(60)
-		self:addChild(self.scoreText)
-	else
-		self.scoreText:setText("Score: " .. tostring(self.score))
-	end
-end
-
-function GamePlay:updateLevelText()
-	if self.levelText == nil then
-		self.levelText = TextField.new(self.dogfont30, "Level: 1")
-		self.levelText:setTextColor(0xffffff)
-		self.levelText:setX(40)
-		self.levelText:setY(100)
-		self:addChild(self.levelText)
-	else
-		self.levelText:setText("Level: " .. tostring(self.level))
-	end
-end
-
 
 function GamePlay:onEnterBegin()
-	
+	person = Person.new(self, personStartX, personStartY)
+	arrows = Arrows.new(self, person)
+	self:loadBackground()
+	self:loadSounds()
+	self:addChild(person)
 end
 
 function GamePlay:onEnterEnd()
@@ -100,6 +51,53 @@ function GamePlay:onExitBegin()
 	
 	self:removeEventListener("exitBegin", self.onExitBegin, self)
 end
+
+
+function GamePlay:loadSounds()
+	local th = getActiveTheme()
+	local f = th.soundFolder
+	
+	if settings.soundEnabled then
+		self.backgroundMusic = Sound.new(f .. th.sounds.background)
+		self.popSound = Sound.new(f .. th.sounds.balloonPop)
+		self.zombieHitSound = Sound.new(f .. th.sounds.zombieHit)
+		self.zombieLoseSound = Sound.new(f .. th.sounds.zombieLose)
+		self.spaceShipFlyingSound = Sound.new(f .. th.sounds.shipFlying)
+		self.spaceShipHitSound = Sound.new(f .. th.sounds.shipHit)
+		self.rocketFlyingSound = Sound.new(f .. th.sounds.rocketFlying)
+		self.rocketHitSound = Sound.new(f .. th.sounds.rocketHit)
+	end
+end
+
+function GamePlay:loadBackground()
+	local th = getActiveTheme()
+	local f = th.imageFolder
+	local bitmap = scaleBackground(f .. th.images.background)
+	self:addChild(bitmap)
+end
+
+function GamePlay:updateScore(points)
+	self.score = self.score + points
+	if self.scoreText == nil then
+		self.scoreText = ShadowText.new(fonts.font30, "Score: 0")
+		self.scoreText:setPosition(40,60)
+		self:addChild(self.scoreText)
+	else
+		self.scoreText:setText("Score: " .. tostring(self.score))
+	end
+end
+
+function GamePlay:updateLevelText()
+	if self.levelText == nil then
+		self.levelText = ShadowText.new(fonts.font30, "Level: 1")
+		self.levelText:setPosition(40,100)
+		self:addChild(self.levelText)
+	else
+		self.levelText:setText("Level: " .. tostring(self.level))
+	end
+end
+
+
 
 function GamePlay:addListeners()
 	self:addEventListener("exitBegin", self.onExitBegin, self)
@@ -152,11 +150,10 @@ function GamePlay:drawGameOver()
 	self:addChild(self.restartButton)
 	
 	if self.gameOverText == nil then
-		local textfield = TextField.new(self.dogfont40, "GAME OVER")
-		textfield:setTextColor(0xffffff)
-		textfield:setX(180)
-		textfield:setY(180)
-		self.gameOverText = textfield
+
+		local textGameOver = ShadowText.new(fonts.font40, "GAME OVER")
+		textGameOver:setPosition(180,180)
+		self.gameOverText = textGameOver --textfield
 	end
 	self:addChild(self.gameOverText)
 end
@@ -190,25 +187,27 @@ function GamePlay:restartGame()
 	self:nextLevel()
 	self.gameOver = false
 	self:removeGameOver()
-	
-	self.backgroundMusicChannel = self.backgroundMusic:play(0, true)
+
+	self:playSound(BACKGROUND)
 	
 end
 
 function GamePlay:createRestartButton()
 	-- create the button
-	local button = RestartButton.new(self.dogfont30, "Restart")
+	local button = RestartButton.new(fonts.font30, "Restart")
 
 	-- register to "click" event
 	local click = 0
 	button:addEventListener("click", 
 		function() 
 			print("restartGame clicked")
-			self:restartGame()
+			
+			---self:restartGame()
+			sceneManager:changeScene("start", 1, SceneManager.fade, easing.outBack)
 			
 		end)
 
-	---button:setPosition(40, 150)
+	button:setPosition(300, 200)
 	self.restartButton = button
 
 end
@@ -243,6 +242,9 @@ function GamePlay:nextLevel()
 			self:addChild(self.spaceShip)
 			self:playSound(SPACESHIP_FLYING)
 		end
+		---bats[#bats+1] = Bat.new()
+		---self:addChild(bats[#bats])
+		
 	end
 
 	if self.level % 5 == 0 then
@@ -259,6 +261,8 @@ end
 
 function GamePlay:endGame()
 	if not self.gameOver then
+
+		settings:updateTotalScore(self.score)
 
 		local i = 1
 		while i <= #self.balloons do
@@ -292,41 +296,47 @@ function GamePlay:endGame()
 		arrows:remove()
 		self:drawGameOver()
 		self:removeListeners()
-		self.backgroundMusicChannel:stop()
+		self:stopSound(BACKGROUND)
 		
 	end
 end
 
 function GamePlay:playSound(sound)
-
-	if sound == BALLOON_POP then
-		self.popSound:play()
-	elseif sound == ZOMBIE_HIT then
-		self.zombieHitSound:play()
-	elseif sound == ZOMBIE_LOSE then
-		self.zombieLoseSound:play()
-	elseif sound == SPACESHIP_FLYING then
-		self.spaceShipFlyingSoundChannel = self.spaceShipFlyingSound:play(0,true)
-	elseif sound == SPACESHIP_HIT then
-		self.spaceShipFlyingSoundChannel:stop()
-		self.spaceShipHitSound:play()
-	elseif sound == ROCKET_FLYING then
-		self.rocketFlyingSoundChannel = self.rocketFlyingSound:play(0,true)
-	elseif sound == ROCKET_HIT then
-		self.rocketFlyingSoundChannel:stop()
-		self.rocketHitSound:play()
+	if settings.soundEnabled then
+		if sound == BALLOON_POP then
+			self.popSound:play()
+		elseif sound == ZOMBIE_HIT then
+			self.zombieHitSound:play()
+		elseif sound == ZOMBIE_LOSE then
+			self.zombieLoseSound:play()
+		elseif sound == SPACESHIP_FLYING then
+			self.spaceShipFlyingSoundChannel = self.spaceShipFlyingSound:play(0,true)
+		elseif sound == SPACESHIP_HIT then
+			self.spaceShipFlyingSoundChannel:stop()
+			self.spaceShipHitSound:play()
+		elseif sound == ROCKET_FLYING then
+			self.rocketFlyingSoundChannel = self.rocketFlyingSound:play(0,true)
+		elseif sound == ROCKET_HIT then
+			self.rocketFlyingSoundChannel:stop()
+			self.rocketHitSound:play()
+		elseif sound == BACKGROUND then
+			self.backgroundMusicChannel = self.backgroundMusic:play(0, true)
+		end
 	end
 end
 
 function GamePlay:stopSound(sound)
 
-	if sound == SPACESHIP_FLYING then
-		self.spaceShipFlyingSoundChannel:stop()
-	elseif sound == ROCKET_FLYING then
-		if self.rocketFlyingSoundChannel ~= nil then
-			self.rocketFlyingSoundChannel:stop()
+	if settings.soundEnabled then
+		if sound == SPACESHIP_FLYING then
+			self.spaceShipFlyingSoundChannel:stop()
+		elseif sound == ROCKET_FLYING then
+			if self.rocketFlyingSoundChannel ~= nil then
+				self.rocketFlyingSoundChannel:stop()
+			end
+		elseif sound == BACKGROUND then
+			self.backgroundMusicChannel:stop()
 		end
-	
 	end
 end
 
@@ -378,7 +388,15 @@ function GamePlay:onEnterFrame()
 				self.rocket = nil
 			end
 		end
-
+--[[
+		i = 1
+		if pressedCount % 5 == 0 then
+			while i <= #bats do
+				bats[i]:update()
+					i = i + 1
+			end
+		end
+--]]		
 		local j = 1
 		local continue = true
 		while j <= #rocks do
@@ -436,6 +454,7 @@ function GamePlay:onEnterFrame()
 			end
 			continue = true
 		end
+		
 		if #self.balloons == 0 and not self.nextLevelInit then
 			self:nextLevel()
 		end

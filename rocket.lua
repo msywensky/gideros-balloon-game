@@ -1,11 +1,16 @@
 Rocket = Core.class(Sprite)
 
-local shipmaxwidth = application:getContentWidth()
 
+local rocketTextures = { }
 
-local textures = {
-	Texture.new("images/fighter-50px.png"),
-	Texture.new("images/tbird-50px.png") }
+function loadRocketTextures(th)
+
+	for i = 1, #th.images.rockets do
+		rocketTextures[i] = Texture.new(th.imageFolder .. th.images.rockets[i])
+	end
+
+end
+
 
 function Rocket:init()
 
@@ -17,8 +22,8 @@ function Rocket:init()
 	self.y = 300
 	self:setPosition(self.x, self.y)
 
-	local i = math.random(1, #textures)
-	self:addChild(Bitmap.new(textures[i]))
+	local i = math.random(1, #rocketTextures)
+	self:addChild(Bitmap.new(rocketTextures[i]))
 
 end
 
@@ -33,5 +38,5 @@ function Rocket:isHit(x,y)
 end
 
 function Rocket:offScreen()
-	return self.x < -50 or self.x > shipmaxwidth + 50
+	return self.y < 0
 end

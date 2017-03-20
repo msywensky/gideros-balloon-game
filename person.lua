@@ -4,18 +4,17 @@ Person = Core.class(Sprite)
 
 function Person:init(stage, x,y)
 	-- create a Bitmap for each frame
-	local frameImages = {
-		Bitmap.new(Texture.new("images/Walk1.png")),
-		Bitmap.new(Texture.new("images/Walk2.png")),
-		Bitmap.new(Texture.new("images/Walk3.png")),
-		Bitmap.new(Texture.new("images/Walk4.png"))	}
-		
-	self.aimImage = Bitmap.new(Texture.new("images/StayAttack1.png"))	
-		
-	self.throwImages = {
-		Bitmap.new(Texture.new("images/StayAttack2.png")),
-		Bitmap.new(Texture.new("images/StayAttack3.png")),
-		Bitmap.new(Texture.new("images/StayAttack4.png"))	}
+	local th = getActiveTheme()
+	
+	self.frames = {}
+	
+	for i = 1, #th.images.character.walk do
+		self.frames[i] = Bitmap.new(Texture.new(th.imageFolder .. th.images.character.walk[i]))
+	end
+	
+	self.aimImage = Bitmap.new(Texture.new(th.imageFolder .. th.images.character.aim))	
+
+	self.throwImage = Bitmap.new(Texture.new(th.imageFolder .. th.images.character.throw))	
 	
 	
 	self.stage = stage
@@ -24,12 +23,8 @@ function Person:init(stage, x,y)
 	self.step = 5
 	self.rockOffset = 30
 	
-	self.frames = {}
-	for i = 1, #frameImages do
-		self.frames[i] = frameImages[i]
-	end
 
-	self.nframes = #frameImages
+	self.nframes = #self.frames
 
 	-- add first Bitmap as a childe
 	self.frame = 1
@@ -94,7 +89,7 @@ function Person:throwRock(x, y, velocity)
 	local rock = Rock.new(self.stage, self.x + self.rockOffset, self.y, x, y, 180 - angle4, velocity)
 
 	self:removeChild(self.activeFrame)
-	self.activeFrame = self.throwImages[3]
+	self.activeFrame = self.throwImage
 	self:addChild(self.activeFrame)
 	
 	return rock

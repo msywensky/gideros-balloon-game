@@ -2,11 +2,15 @@ SpaceShip = Core.class(Sprite)
 
 local shipmaxwidth = application:getContentWidth()
 
+local shipTextures = { }
 
-local textures = {
-	Texture.new("images/UFO-50px.png"),
-	Texture.new("images/UFO_1-50px.png"),
-	Texture.new("images/UFO_2-50px.png") }
+function loadShipTextures(th)
+
+	for i = 1, #th.images.ships do
+		shipTextures[i] = Texture.new(th.imageFolder .. th.images.ships[i])
+	end
+
+end
 
 function SpaceShip:init()
 
@@ -24,8 +28,8 @@ function SpaceShip:init()
 	self.y = math.random(20, 50)
 	self:setPosition(self.x, self.y)
 
-	local i = math.random(1, #textures)
-	self:addChild(Bitmap.new(textures[i]))
+	local i = math.random(1, #shipTextures)
+	self:addChild(Bitmap.new(shipTextures[i]))
 
 end
 

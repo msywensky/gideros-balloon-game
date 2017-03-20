@@ -1,14 +1,26 @@
 Arrows = Core.class(Sprite)
 arrowFrameCount = 0
+
+arrowImages = {}
+
+function loadArrowImages(th)
+	local f = th.imageFolder
+	
+	arrowImages.leftArrow = Bitmap.new(Texture.new(f .. th.images.leftArrow))
+	arrowImages.rightArrow = Bitmap.new(Texture.new(f .. th.images.rightArrow))
+
+end
+
 function Arrows:init(stage, person)
 	
 	self.stage = stage
 	self.leftArrow = Sprite.new()
 	self.rightArrow = Sprite.new()
 	
+	self.leftArrow:addChild(arrowImages.leftArrow)
+	self.rightArrow:addChild(arrowImages.rightArrow)
+	
 
-	self.leftArrow:addChild(Bitmap.new(Texture.new("images/left50px.png")))
-	self.rightArrow:addChild(Bitmap.new(Texture.new("images/right50px.png")))
 	self.leftArrow:setPosition(25,180)
 	self.rightArrow:setPosition(90,180)
 	self.direction = 0
